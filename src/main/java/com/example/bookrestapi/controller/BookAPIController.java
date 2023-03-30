@@ -13,10 +13,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
+import javax.xml.bind.*;
 
 
 @WebServlet(name = "bookapi", value = "/bookapi")
@@ -25,21 +22,78 @@ public class BookAPIController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private BookDAO bookDAO;
     private Gson gson;
+    private JAXBContext jaxbContext;
 
     @Override
     public void init() throws ServletException {
         bookDAO = new BookDAO();
         gson = new GsonBuilder().setPrettyPrinting().create();
+        try {
+            jaxbContext = JAXBContext.newInstance(BookList.class);
+        } catch (JAXBException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        BufferedReader reader = request.getReader();
-        Book newBook = gson.fromJson(reader, Book.class);
-        bookDAO.insertBook(newBook);
+        String contentType = request.getHeader("Content-Type");
+        String accept = request.getHeader("Accept");
 
+        if (contentType.equals("application/json") && accept.equals("application/json")) {
+            BufferedReader reader = request.getReader();
+            Book newBook = gson.fromJson(reader, Book.class);
+            bookDAO.insertBook(newBook);
+            response.setStatus(HttpServletResponse.SC_CREATED);
+            response.setContentType("application/json");
+            response.getWriter().write(gson.toJson(newBook));
+        } else if (contentType.equals("application/xml") && accept.equals("application/xml")) {
+            Unmarshaller unmarshaller = null;
+            try {
+                unmarshaller = jaxbContext.createUnmarshaller();
+            } catch (JAXBException e) {
+                throw new RuntimeException(e);
+            }
+            Book newBook = null;
+            try {
+                newBook = (Book) unmarshaller.unmarshal(request.getInputStream());
+            } catch (JAXBException e) {
+                throw new RuntimeException(e);
+            }
+            bookDAO.insertBook(newBook);
+            response.setStatus(HttpServletResponse.SC_CREATED);
+            response.setContentType("application/xml");
+            Marshaller marshaller = null;
+            try {
+                marshaller = jaxbContext.createMarshaller();
+            } catch (JAXBException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                marshaller.marshal(newBook, response.getOutputStream());
+            } catch (JAXBException e) {
+                throw new RuntimeException(e);
+            }
+        } else if (contentType.equals("text/plain") && accept.equals("text/plain")) {
+            BufferedReader reader = request.getReader();
+            String bookTitle = reader.readLine();
+            String bookAuthor = reader.readLine();
+            String bookDate = reader.readLine();
+            String bookGenres = reader.readLine();
+            String bookCharacters = reader.readLine();
+            String bookSynopsis = reader.readLine();
+            Book newBook = new Book(bookTitle, bookAuthor, bookDate, bookGenres, bookCharacters, bookSynopsis);
+            bookDAO.insertBook(newBook);
+            response.setStatus(HttpServletResponse.SC_CREATED);
+            response.setContentType("text/plain");
+            response.getWriter().write(newBook.toString());
+        } else {
+            response.sendError(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE, "Unsupported media type or format");
+        }
     }
+
+
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
