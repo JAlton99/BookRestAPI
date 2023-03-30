@@ -12,6 +12,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
+
 
 @WebServlet(name = "bookapi", value = "/bookapi")
 public class BookAPIController extends HttpServlet {
@@ -73,11 +78,67 @@ public class BookAPIController extends HttpServlet {
             }
         }
 
-        response.setContentType("text/json");
-        PrintWriter out = response.getWriter();
-        out.write(responseString);
-    }
+        String format = request.getParameter("format");
 
+        if ("xml".equalsIgnoreCase(format)) {
+            response.setContentType("application/xml");
+            StringWriter writer = new StringWriter();
+            JAXBContext jaxbContext = null;
+            try {
+                jaxbContext = JAXBContext.newInstance(Book.class, ArrayList.class);
+            } catch (JAXBException e) {
+                throw new RuntimeException(e);
+            }
+            Marshaller marshaller = null;
+            try {
+                marshaller = jaxbContext.createMarshaller();
+            } catch (JAXBException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            } catch (PropertyException e) {
+                throw new RuntimeException(e);
+            }
+            if (paramId == null && paramTitle == null) {
+                try {
+                    marshaller.marshal(new ArrayList<Book>(bookDAO.getAllBooks()), writer);
+                } catch (JAXBException e) {
+                    throw new RuntimeException(e);
+                }
+            } else if (paramId != null) {
+                Book book = bookDAO.getBookByID(Integer.parseInt(paramId));
+                if (book != null) {
+                    try {
+                        marshaller.marshal(book, writer);
+                    } catch (JAXBException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    writer.write("No book found with ID " + paramId);
+                }
+            } else {
+                List<Book> booksByTitle = bookDAO.getBooksByTitle(paramTitle);
+                if (booksByTitle.size() > 0) {
+                    try {
+                        marshaller.marshal(new ArrayList<Book>(booksByTitle), writer);
+                    } catch (JAXBException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    writer.write("No books found with title " + paramTitle);
+                }
+            }
+            response.getWriter().write(writer.toString());
+        } else if ("text".equalsIgnoreCase(format)) {
+            response.setContentType("text/plain");
+            response.getWriter().write(responseString);
+        } else {
+            response.setContentType("application/json");
+            PrintWriter out = response.getWriter();
+            out.write(responseString);
+        }
+    }
     @Override
     public void destroy() {
         bookDAO.closeConnection();

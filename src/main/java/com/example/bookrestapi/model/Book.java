@@ -1,4 +1,9 @@
 package com.example.bookrestapi.model;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
+@XmlRootElement(name = "book")
+@XmlType(propOrder={"id", "title", "author", "date", "genres", "characters", "synopsis"})
 public class Book {
 
 	int id;
@@ -8,8 +13,8 @@ public class Book {
 	String genres;
 	String characters;
 	String synopsis;
-	
-	
+
+
 	public Book(int id, String title, String author, String date, String genres, String characters, String synopsis) {
 
 		this.id = id;
@@ -19,9 +24,9 @@ public class Book {
 		this.genres = genres;
 		this.characters = characters;
 		this.synopsis = synopsis;
-		
+
 	}
-	
+
 
 	public Book() {}
 
@@ -85,6 +90,6 @@ public class Book {
 	@Override
 	public String toString() {
 		return "Book [id=" + id + ", title=" + title + ", author=" + author + ", date=" + date + ", genres=" + genres
-				+ ", synnopsis=" + synopsis + ", characters=" + characters + "]";
+				+ ", synopsis=" + synopsis + ", characters=" + characters + "]";
 	}
 }

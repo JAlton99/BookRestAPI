@@ -17,6 +17,8 @@
           <element id="library" level="project" name="Maven: com.google.code.gson:gson:2.10.1" />
           <element id="library" level="project" name="Maven: com.mysql:mysql-connector-j:8.0.32" />
           <element id="library" level="project" name="Maven: com.google.protobuf:protobuf-java:3.21.9" />
+          <element id="library" level="project" name="Maven: javax.xml.bind:jaxb-api:2.3.1" />
+          <element id="library" level="project" name="Maven: javax.activation:javax.activation-api:1.2.0" />
         </element>
       </element>
       <element id="directory" name="META-INF">
