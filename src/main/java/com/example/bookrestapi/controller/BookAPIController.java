@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.example.bookrestapi.dao.BookDAO;
 import com.example.bookrestapi.model.Book;
+import com.example.bookrestapi.model.BookList;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import jakarta.servlet.ServletException;
@@ -37,12 +38,15 @@ public class BookAPIController extends HttpServlet {
         BufferedReader reader = request.getReader();
         Book newBook = gson.fromJson(reader, Book.class);
         bookDAO.insertBook(newBook);
+
     }
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         BufferedReader reader = request.getReader();
-        Book book = gson.fromJson(reader, Book.class);
+        String data = request.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
+        Book book = gson.fromJson(data, Book.class);
+        System.out.println(data);
         bookDAO.updateBook(book);
     }
 
@@ -85,7 +89,7 @@ public class BookAPIController extends HttpServlet {
             StringWriter writer = new StringWriter();
             JAXBContext jaxbContext = null;
             try {
-                jaxbContext = JAXBContext.newInstance(Book.class, ArrayList.class);
+                jaxbContext = JAXBContext.newInstance(BookList.class);
             } catch (JAXBException e) {
                 throw new RuntimeException(e);
             }
@@ -121,7 +125,7 @@ public class BookAPIController extends HttpServlet {
                 List<Book> booksByTitle = bookDAO.getBooksByTitle(paramTitle);
                 if (booksByTitle.size() > 0) {
                     try {
-                        marshaller.marshal(new ArrayList<Book>(booksByTitle), writer);
+                        marshaller.marshal(new BookList(booksByTitle), writer);
                     } catch (JAXBException e) {
                         throw new RuntimeException(e);
                     }

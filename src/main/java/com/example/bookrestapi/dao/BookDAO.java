@@ -117,9 +117,9 @@ public class BookDAO {
 		List<Book> books = new ArrayList<>();
 
 		try {
-			String selectSQL = "SELECT * FROM books WHERE title = ?";
+			String selectSQL = "SELECT * FROM books WHERE title LIKE ?";
 			PreparedStatement preparedStatement = conn.prepareStatement(selectSQL);
-			preparedStatement.setString(1, title);
+			preparedStatement.setString(1, "%" + title + "%");
 			ResultSet resultSet = preparedStatement.executeQuery();
 
 			while (resultSet.next()) {
@@ -194,7 +194,7 @@ public class BookDAO {
 
 	public void insertBook(Book book) {
 		openConnection();
-
+		System.out.println(book.toString());
 		try {
 			String insertSQL = "INSERT INTO books (title, author, date, genres, characters, synopsis) VALUES (?, ?, ?, ?, ?, ?)";
 			PreparedStatement preparedStatement = conn.prepareStatement(insertSQL);
