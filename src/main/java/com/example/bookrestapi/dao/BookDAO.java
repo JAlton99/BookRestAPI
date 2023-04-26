@@ -17,7 +17,6 @@ public class BookDAO {
 	private Statement stmt = null;
 	private String user = "altonjac";
 	private String password = "munverbE5";
-	// Note none default port used, 6306 not 3306
 	private String url = "jdbc:mysql://mudfoot.doc.stu.mmu.ac.uk:6306/altonjac";
 
 	public BookDAO() {
@@ -25,7 +24,7 @@ public class BookDAO {
 
 	private void openConnection() {
 		try {
-			Class.forName("com.mysql.jdbc.Driver").getDeclaredConstructor().newInstance();
+			Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
 		} catch (Exception e) {
 			System.out.println(e);
 		}
@@ -63,20 +62,21 @@ public class BookDAO {
 		return thisBook;
 	}
 
-	public ArrayList<Book> getAllBooks() {
-		ArrayList<Book> allBooks = new ArrayList<Book>();
+	public List<Book> getAllBooks() {
+		ArrayList<Book> allBooks = new ArrayList<>();
 		openConnection();
 
 		try {
-			String selectSQL = "select * from books";
-			ResultSet rs1 = stmt.executeQuery(selectSQL);
+			String selectSQL = "SELECT * FROM books";
+			PreparedStatement preparedStatement = conn.prepareStatement(selectSQL);
+			ResultSet rs = preparedStatement.executeQuery();
 
-			while (rs1.next()) {
-				oneBook = getNextBook(rs1);
+			while (rs.next()) {
+				Book oneBook = getNextBook(rs);
 				allBooks.add(oneBook);
 			}
 
-			stmt.close();
+			preparedStatement.close();
 			closeConnection();
 		} catch (SQLException se) {
 			System.out.println(se);
@@ -84,6 +84,7 @@ public class BookDAO {
 
 		return allBooks;
 	}
+
 
 
 	public Book getBookByID(int id) {
@@ -136,8 +137,9 @@ public class BookDAO {
 		return books;
 	}
 
-	public void deleteBook(int id) {
+	public boolean deleteBook(int id) {
 		openConnection();
+		boolean deleted = false;
 		try {
 			String selectSQL = "SELECT * FROM books WHERE id=?";
 			PreparedStatement preparedStatement = conn.prepareStatement(selectSQL);
@@ -154,10 +156,12 @@ public class BookDAO {
 				throw new IllegalArgumentException("Book not found with id: " + id);
 			}
 			resultSet.close();
+			deleted = true;
 		} catch (SQLException se) {
 			System.out.println(se);
 		}
 		closeConnection();
+		return deleted;
 	}
 
 	public void updateBook(Book book) {
@@ -216,4 +220,5 @@ public class BookDAO {
 		closeConnection();
 	}
 }
+
 

@@ -1,0 +1,19 @@
+.info-book {
+    background-color: #4b2750;
+    min-height: 100vh;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.info-book h1 {
+    font-size: 2rem;
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+.info-book p {
+    font-size: 1rem;
+    color: #ffffff;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}

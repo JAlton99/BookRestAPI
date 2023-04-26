@@ -1,0 +1,122 @@
+nav {
+    background-color: #534465;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: Arial, sans-serif;
+}
+
+nav h1 {
+    font-size: 2.5rem;
+    color: #ffffff;
+    margin: 0;
+}
+
+nav ul {
+    display: flex;
+    list-style-type: none;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+}
+
+nav li {
+    margin-left: 20px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 1.2rem;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+nav form {
+    display: flex;
+    align-items: center;
+}
+
+nav label {
+    color: #ffffff;
+    font-size: 1.2rem;
+    margin-right: 5px;
+}
+
+nav input {
+    font-size: 1.2rem;
+    padding: 5px;
+    border: 1px solid #ffffff;
+    border-radius: 3px;
+    background-color: #1c022f;
+    color: #ffffff;
+}
+
+nav button {
+    font-size: 1.2rem;
+    padding: 5px 10px;
+    background-color: #3c0748;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+    border-radius: 3px;
+    margin-left: 5px;
+}
+
+nav button:hover {
+    background-color: #ffffff;
+    color: #1c022f;
+    cursor: pointer;
+}
+
+nav ul ul {
+    position: absolute;
+    background-color: #1c022f;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    border-radius: 3px;
+    min-width: 200px;
+    list-style-type: none;
+    margin-top: 5px;
+}
+
+nav li:hover ul {
+    display: block;
+}
+
+.search-results {
+    position: absolute;
+    background-color: #330a38;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    list-style-type: none;
+    padding: 0;
+    margin-top: 5px;
+    max-height: 200px;
+    overflow-y: auto;
+    width: calc(100% - 20px);
+    display: none;
+}
+
+nav input:focus + .search-results,
+.search-results:hover {
+    display: block;
+}
+
+.search-results li {
+    padding: 5px 10px;
+}
+
+.search-results li:hover {
+    background-color: #301742;
+}
+
+.search-results a {
+    text-decoration: none;
+    color: #f5f1f1;
+}
+
+nav .search-container {
+    position: relative;
+}
